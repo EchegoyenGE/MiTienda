@@ -1,5 +1,6 @@
 import express from 'express'
 import './config/mongoose'
+import { PORT } from './config'
 
 import productRouter from './routes/products.routes'
 
@@ -9,7 +10,6 @@ app.use(express.json());
 
 app.use('/products', productRouter)
 
-const PORT = process.env.PORT || 4000
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
 })
