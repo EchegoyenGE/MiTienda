@@ -12,10 +12,10 @@ const Navbar = () => {
                 </button>
                 <div className="collapse navbar-collapse" id="navbarNav">
                     <ul className="navbar-nav ms-auto">
-                        <Link className="nav-link active" aria-current="page" href="#">
+                        <Link className="nav-link active" aria-current="page" to='/'>
                             Cart
                         </Link>
-                        <Link className="nav-link" href="#">
+                        <Link className="nav-link" to='/'>
                             Login
                         </Link>
                         <Link className="nav-link" to="/products/new">
