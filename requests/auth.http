@@ -1,0 +1,29 @@
+@api = http://localhost:4000/auth
+
+
+#### Login
+
+POST {{api}}/login
+Content-Type: application/json
+
+{
+    "email": "some@email.com",
+    "password": "123"
+}
+
+
+#### Register
+
+POST {{api}}/register
+Content-Type: application/json
+
+{
+    "email": "some@email.com",
+    "password": "123"
+}
+
+
+#### Profile
+
+GET {{api}}/profile
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxMmNlM2ZhZGRmZjAyNTk2Y2M5ZGFmYyIsImlhdCI6MTYzMDMzNTY3OX0.BjffDPzMDaq6pMyEdIk3t4NA4ffPd39gn5hPX_cXOR8 

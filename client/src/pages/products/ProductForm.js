@@ -37,7 +37,7 @@ const ProductForm = () => {
                                             <span className='ms-2'>Loading...</span> 
                                         </>
                                     ) : (
-                                            <span>Save</span>
+                                        <span>Save</span>
                                     )
                                 }
                             </button>
