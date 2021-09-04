@@ -15,6 +15,14 @@ app.use(express.json());
 app.use('/products', productRouter)
 app.use('/auth', authRouter)
 
+app.use((err, req, res, next) => {
+    const error = {
+        status: err.status || 500,
+        message: err.message
+    }
+    console.log(error)
+})
+
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
 })

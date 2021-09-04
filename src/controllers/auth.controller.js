@@ -1,50 +1,66 @@
 import { User } from '../models'
 import jwt from 'jsonwebtoken'
 import { JWT_SECRET } from '../config'
+import { userSchema } from '../libs/schema.validator'
+import createError from 'http-errors'
 
-export const login = async (req, res) => {
-    const { email, password } = req.body
+export const login = async (req, res, next) => {
+    
+    try {
+        const result = await userSchema.validateAsync(req.body)
 
-    /* match password */
-    const userFound = await User.findOne({ email: email })
+        /* match password */
+        const userFound = await User.findOne({ email: result.email })
 
-    if (!userFound) return res.status(401).json({ message: 'Invalid user or password' })
+        if (!userFound) return next(createError.Unauthorized('Email already exists'))
 
-    const isMatch = await userFound.validPassword(password)
+        const isMatch = await userFound.validPassword(password)
 
-    if (!isMatch) return res.status(401).json({ message: 'Invalid user or password' })
+        if (!isMatch) return res.status(401).json({ message: 'Invalid user or password' })
 
-    jwt.sign({ id: userFound._id }, JWT_SECRET, (err, token) => {
-        if (err) {
-            res.status(500).send(err)
-        } else {
-            res.json({ token })
-        }
-    })
+        jwt.sign({ id: userFound._id }, JWT_SECRET, (err, token) => {
+            if (err) {
+                res.status(500).send(err)
+            } else {
+                res.json({ token })
+            }
+        })
+    } catch (error) {
+        if (error.isJoi) return next(createError.BadRequest());
+        next(error);
+    }
 }
 
-export const register = async (req, res) => {
-    const { email, password } = req.body
+export const register = async (req, res, next) => {
 
-    const user = new User({ email, password })
+    try {
+        const result = await userSchema.validateAsync(req.body)
 
-    user.password = await user.generateHash(user.password)
+        const userFound = await User.findOne({ email: result.email })
 
-    const userFound = await User.findOne({ email: email })
-    if (userFound) {
-        res.statusMessage = 'User already exists'
-        return res.status(400).json({ message: 'User already exists' })
-    }
-
-    const userSaved = await user.save()
-
-    jwt.sign({ id: userSaved._id }, JWT_SECRET, (err, token) => {
-        if (err) {
-            res.status(500).send(err)
-        } else {
-            res.json({ token })
+        if (userFound) {
+            res.statusMessage = 'User already exists'
+            return res.status(400).json({ message: 'User already exists' })
         }
-    })
+
+        const user = new User({ email: result.email, password: result.password })
+
+        user.password = await user.generateHash(user.password)
+
+        const userSaved = await user.save()
+
+        jwt.sign({ id: userSaved._id }, JWT_SECRET, (err, token) => {
+            if (err) {
+                res.status(500).send(err)
+            } else {
+                res.json({ token })
+            }
+        })
+
+    } catch (error) {
+        if (error.isJoi) return next(createError.NotFound());
+        next(error)
+    }
 }
 
 export const profile = async (req, res) => {
